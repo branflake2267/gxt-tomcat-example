@@ -1,5 +1,6 @@
 package com.example.tomcatsandbox.client.rpc;
 
+import com.example.core.client.models.Person;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -9,4 +10,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("rpcService")
 public interface RpcService extends RemoteService {
   String testCallServer(String name) throws IllegalArgumentException;
+
+  Person getPerson();
 }

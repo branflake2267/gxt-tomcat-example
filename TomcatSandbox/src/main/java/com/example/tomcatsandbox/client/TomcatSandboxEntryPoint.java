@@ -1,6 +1,7 @@
 package com.example.tomcatsandbox.client;
 
 import com.example.core.client.MyBusinessLogic;
+import com.example.core.client.models.Person;
 import com.example.tomcatsandbox.client.rpc.RpcService;
 import com.example.tomcatsandbox.client.rpc.RpcServiceAsync;
 import com.google.gwt.core.client.EntryPoint;
@@ -28,10 +29,12 @@ public class TomcatSandboxEntryPoint implements EntryPoint {
     
     RootPanel.get().add(new TextButton("GXT Works"));
     
+    // example external library use
     String s = "This ";
     new MyBusinessLogic().transformString(s);
     RootPanel.get().add(new HTML("tranformed:" + s));
 
+    // example generic rpc  call
     rpcService.testCallServer("Hello ...", new AsyncCallback<String>() {
       @Override
       public void onSuccess(String result) {
@@ -44,6 +47,26 @@ public class TomcatSandboxEntryPoint implements EntryPoint {
         caught.printStackTrace();
       }
     });
+    
+    // example external library model use
+    try {
+      rpcService.getPerson(new AsyncCallback<Person>() {
+        @Override
+        public void onSuccess(Person result) {
+          GWT.log("result=" + result.getName());
+          System.out.println("result=" + result.getName());
+          RootPanel.get().add(new HTML("Person Loaded " + result.getName()));
+        }
+        
+        @Override
+        public void onFailure(Throwable caught) {
+          // TODO
+        }
+      });
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
 }

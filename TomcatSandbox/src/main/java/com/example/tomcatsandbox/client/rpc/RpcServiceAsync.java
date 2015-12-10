@@ -1,5 +1,6 @@
 package com.example.tomcatsandbox.client.rpc;
 
+import com.example.core.client.models.Person;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -7,4 +8,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface RpcServiceAsync {
   void testCallServer(String input, AsyncCallback<String> callback) throws IllegalArgumentException;
+  
+  void getPerson(AsyncCallback<Person> callback) throws Exception;
 }
