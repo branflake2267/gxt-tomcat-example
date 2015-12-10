@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example.tomcatsandbox</groupId>
+  <artifactId>TomcatSandbox</artifactId>
+  <packaging>war</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>gwt-basic-rpc-tomcat</name>
+  <description>GWT with RPC using Tomcat</description>
+
+  <!-- Tomcat -->
+  <!-- mvn help:describe -Dplugin=tomcat7 -->
+
+  <!-- Running with Maven -->
+  <!-- mvn clean install -->
+  <!-- mvn tomcat7:run - start web server -->
+  <!-- mvn gwt:run-codeserver - start gwt code server -->
+  <!-- goto http://localhost:8080 -->
+  <!-- mvn tomcat7:shutdown - stop web server -->
+
+  <properties>
+    <!-- GWT -->
+    <gwt.version>2.7.0</gwt.version>
+
+    <!-- GXT -->
+    <gxt.version>4.0.0</gxt.version>
+
+    <!-- Tomcat -->
+
+    <!-- Maven -->
+    <guice.version>4.0-beta5</guice.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>/src/main/webapp</directory>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.1</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>display-dependency-updates</goal>
+              <goal>display-plugin-updates</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Ignore GWTTestCases when running JUnit Runner -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.18</version>
+        <configuration>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/*GwtTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <!-- GWT -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>${gwt.version}</version>
+        <configuration>
+          <strict>true</strict>
+
+          <testTimeOut>180</testTimeOut>
+          <mode>htmlunit</mode>
+          <!-- Switch to a suite to run tests faster -->
+          <!-- <includes>**/*GwtTestSuite.java</includes> -->
+          <!-- <excludes>**/*GwtTest.java</excludes> -->
+          <includes>**/*GwtTest.java</includes>
+
+          <extraJvmArgs>-Xmx1G -XX:MaxPermSize=256M</extraJvmArgs>
+          <logLevel>INFO</logLevel>
+          <style>OBF</style>
+
+          <!-- mvn gwt:run-codeserver - won't have to use the bookmarklet -->
+          <launcherDir>${project.build.directory}/${project.build.finalName}</launcherDir>
+
+          <runTarget>TomcatSandbox.html</runTarget>
+          <modules>
+            <module>com.example.tomcatsandbox.TomcatSandbox</module>
+          </modules>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <webResources>
+            <resource>
+              <directory>src/main/webapp</directory>
+            </resource>
+          </webResources>
+        </configuration>
+      </plugin>
+
+      <!-- http://tomcat.apache.org/maven-plugin-2.2/context-goals.html - goals -->
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <webappDirectory>src/main/webapp</webappDirectory>
+        </configuration>
+      </plugin>
+
+    </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <!-- Eclipse m2e Enhancing -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <versionRange>[2.1,)</versionRange>
+                    <goals>
+                      <goal>display-plugin-updates</goal>
+                      <goal>display-dependency-updates</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <repositories>
+    <repository>
+      <!-- ~/.m2/settings.xml add <server/> with the support portal credentials -->
+      <id>sencha-gxt-repository</id>
+      <name>Sencha GXT Repository</name>
+
+      <!-- Commercial (with Support) -->
+      <!-- ie. 3.1.1 -->
+      <!-- <url>https://maven.sencha.com/repo/gxt-commercial-release</url> -->
+      <!-- ie. GXT 3.1.4, 4.0.0 -->
+      <url>https://maven.sencha.com/repo/gxt-support-commercial-release</url>
+      <!-- ie. GXT 3.1.5-SNAPSHOT -->
+      <!-- <url>https://maven.sencha.com/repo/gxt-commercial-snapshot</url> -->
+
+      <!-- GPL -->
+      <!-- <url>https://maven.sencha.com/repo/gxt-gpl-release</url> -->
+      <!-- <url>https://maven.sencha.com/repo/gxt-gpl-snapshot</url> -->
+      <!-- GPL with Support -->
+      <!-- <url>https://maven.sencha.com/repo/gxt-support-gpl-release</url> -->
+    </repository>
+  </repositories>
+
+  <!-- GWT (BOM or Bill of Materials) -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt</artifactId>
+        <version>${gwt.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!-- GWT -->
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-codeserver</artifactId>
+    </dependency>
+
+    <!-- GXT -->
+    <dependency>
+      <groupId>com.sencha.gxt</groupId>
+      <artifactId>gxt</artifactId>
+      <version>${gxt.version}</version>
+    </dependency>
+    <!-- GXT 4.0.0+ - Triton Theme -->
+    <dependency>
+      <groupId>com.sencha.gxt</groupId>
+      <artifactId>gxt-theme-triton</artifactId>
+      <version>${gxt.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.example.core</groupId>
+      <artifactId>SandyCore</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- Server -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>3.0-alpha-1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
